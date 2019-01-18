@@ -57,7 +57,22 @@ class ListTableViewController: UIViewController,UITableViewDelegate {
         )
         
         items.bind(to: tblMovieList.rx.items(cellIdentifier: "MoviewListCell", cellType: MoviewListCell.self)) { (row, element, cell) in
-            cell.setMovieData(objMovie: element)
+            cell.imgMovieList.backgroundColor = UIColor.lightGray
+            cell.imgMovieList.kf.indicatorType = .activity
+            cell.imgMovieList.kf.setImage(with: URL(string: element.posterPath), completionHandler: {
+                (image, error, cacheType, imageUrl) in
+                if (image == nil) {
+                    //self.imgMovie.image = UIImage(named: "iconUserPlaceholder")
+                }
+            })
+            
+            cell.lblMovieName.text = element.title
+            cell.lblReleaseDate.text = self.modelMovieList.dfReleaseDate.string(from: Date(timeIntervalSince1970: TimeInterval(element.releaseDate)))
+            cell.lblMovieDescription.text = element.description
+            cell.viewRating.rating = Double((element.rate / 2.0))
+            cell.viewRating.text = "\(String(describing: element.rate))"
+            cell.lblAgeCategory.text = element.ageCategory
+            
         }.disposed(by: disposeBag)
         
         tblMovieList.rx.modelSelected(String.self).subscribe(onNext:  { value in
@@ -70,6 +85,7 @@ class ListTableViewController: UIViewController,UITableViewDelegate {
     func reloadTableviewData() -> Void {
         tblMovieList.reloadData()
     }
+    
     //MARK: - Deallocation Methods
     //MARK: -
     override func didReceiveMemoryWarning() {

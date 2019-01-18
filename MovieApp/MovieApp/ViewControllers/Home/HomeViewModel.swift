@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import Moya
 
 class HomeViewModel {
     
@@ -19,7 +20,8 @@ class HomeViewModel {
     let updateLoadingStatus: PublishSubject<Void>
     
     var movies: [Movie] = [Movie]()
-    var selectedMovie: Movie?
+    
+    private let provider = MoyaProvider<MovieAPI>()
     
     var isLoading: Bool = false {
         didSet {
@@ -27,8 +29,6 @@ class HomeViewModel {
         }
     }
     
-    let sourceStringURL = "https://easy-mock.com/mock/5c19c6ff64b4573fc81a61f3/movieapp/home"
-
     init() {
         self.alertMessage = PublishSubject<String>().asObservable() as! PublishSubject<String>
         self.reloadData = PublishSubject<Void>().asObservable() as! PublishSubject<Void>
@@ -38,31 +38,22 @@ class HomeViewModel {
     func fetchMovies() {
         self.movies.removeAll()
         self.isLoading = true
-        AFUtility().doRequestFor(sourceStringURL, method: .get, dicsParams: nil, dicsHeaders: nil) { (_ response: NSDictionary?, _ statusCode: Int?, _ error: NSError?) in
-            
+        let decoder = JSONDecoder()
+        _ = provider.rx.request(MovieAPI.Home(), callbackQueue: DispatchQueue.main)
+            .map([Movie].self, atKeyPath: "results", using: decoder, failsOnEmptyData: false)
+            .subscribe({ (event) in
             self.isLoading = false
-            if statusCode == 200 {
-                let success = response!.value(forKey: "success") as! Bool
-                if  (success == true) {
-                    if  (response!.value(forKey: "results") != nil) {
-                        if (response!.value(forKey: "results") is NSArray) {
-                            let arrData = response!.value(forKey: "results") as! NSArray
-                            for item in arrData {
-                                self.movies.append(Movie.init(object: item))
-                            }
-                        } else {
-                            self.alertMessage.onNext(key_Failure_Error)
-                        }
-                    }else {
-                        self.alertMessage.onNext(key_Failure_Error)
-                    }
-                } else {
-                    self.alertMessage.onNext(key_Failure_Error)
-                }
-            } else {
-                self.alertMessage.onNext(key_Failure_Error)
+            switch event {
+            case .success(let movies):
+                debugPrint(movies)
+                self.movies = movies
+                break
+            case .error(let error):
+                print(error)
+                self.alertMessage.onNext("Something went wrong")
+                break
             }
             self.reloadData.onNext(())
-        }
+        })
     }
 }

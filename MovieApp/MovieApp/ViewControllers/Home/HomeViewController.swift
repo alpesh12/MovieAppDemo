@@ -153,8 +153,8 @@ extension HomeViewController: iCarouselDataSource, iCarouselDelegate {
         print(carousel.currentItemIndex)
         if (carousel.currentItemIndex > -1 && self.viewModel.movies.count > carousel.currentItemIndex) {
             self.lblMovieName.text = self.viewModel.movies[carousel.currentItemIndex].title
-            self.lblGenre.text = self.viewModel.movies[carousel.currentItemIndex].genreIds?.map({ (genere: GenreIds) -> String in
-                genere.name!
+            self.lblGenre.text = self.viewModel.movies[carousel.currentItemIndex].genreIDS.map({ (genere: GenreID) -> String in
+                genere.name
             }).joined(separator: ", ")
         } else {
             self.lblMovieName.text = ""

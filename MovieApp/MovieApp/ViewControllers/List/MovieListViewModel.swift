@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import Moya
 
 class MovieListModel {
     
@@ -18,8 +19,17 @@ class MovieListModel {
     let reloadData: PublishSubject<Void>
     let updateLoadingStatus: PublishSubject<Void>
     
+    private let provider = MoyaProvider<MovieAPI>()
+    
     var movies: [Movie] = [Movie]()
-    var selectedMovie: Movie?
+    
+    lazy var dfReleaseDate: DateFormatter = {
+        var dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd MMM yyyy"
+        dateFormatter.timeZone = TimeZone.current
+        return dateFormatter
+    }()
+
     
     var isLoading: Bool = false {
         didSet {
@@ -33,34 +43,25 @@ class MovieListModel {
         self.updateLoadingStatus = PublishSubject<Void>().asObservable() as! PublishSubject<Void>
     }
     
-    func fetchMoviesList(strURL:String) {
+    func fetchMovies(keyword: String, offset:Int, type: String) {
         self.movies.removeAll()
         self.isLoading = true
-        AFUtility().doRequestFor(strURL, method: .get, dicsParams: nil, dicsHeaders: nil) { (_ response: NSDictionary?, _ statusCode: Int?, _ error: NSError?) in
-            
-            self.isLoading = false
-            if statusCode == 200 {
-                let success = response!.value(forKey: "success") as! Bool
-                if  (success == true) {
-                    if  (response!.value(forKey: "results") != nil) {
-                        if (response!.value(forKey: "results") is NSArray) {
-                            let arrData = response!.value(forKey: "results") as! NSArray
-                            for item in arrData {
-                                self.movies.append(Movie.init(object: item))
-                            }
-                        } else {
-                            self.alertMessage.onNext(key_Failure_Error)
-                        }
-                    } else {
-                        self.alertMessage.onNext(key_Failure_Error)
-                    }
-                } else {
-                    self.alertMessage.onNext(key_Failure_Error)
+        let decoder = JSONDecoder()
+        _ = provider.rx.request(MovieAPI.LoadMore(keyword: keyword, offset: offset, type: type))
+            .map([Movie].self, atKeyPath: "results", using: decoder, failsOnEmptyData: false)
+            .subscribe({ (event) in
+                self.isLoading = false
+                switch event {
+                case .success(let movies):
+                    debugPrint(movies)
+                    self.movies = movies
+                    break
+                case .error(let error):
+                    print(error)
+                    self.alertMessage.onNext("Something went wrong")
+                    break
                 }
-            } else {
-                self.alertMessage.onNext(key_Failure_Error)
-            }
-            self.reloadData.onNext(())
-        }
+                self.reloadData.onNext(())
+            })
     }
 }

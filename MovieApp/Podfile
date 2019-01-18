@@ -11,12 +11,9 @@ pod 'RxCocoa','~> 4.0'
 pod 'RxDataSources', '~> 3.0'
 
 pod 'iCarousel'
-pod 'SwiftyJSON'
 pod 'Cosmos'
-pod 'Alamofire'
-pod 'ReachabilitySwift'
 pod 'SVProgressHUD'
 pod 'Kingfisher'
-
+pod 'Moya/RxSwift'
 
 end

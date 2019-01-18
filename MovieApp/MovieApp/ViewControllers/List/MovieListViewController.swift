@@ -102,7 +102,7 @@ class MovieListViewController: UIViewController {
                 self?.printData()
             })
             .disposed(by: disposeBag)
-        viewModel.fetchMoviesList(strURL: "https://easy-mock.com/mock/5c19c6ff64b4573fc81a61f3/movieapp/loadmore?keyword=\(searchString)&offset=1&type=nowshowing")
+        viewModel.fetchMovies(keyword: searchString, offset: 1, type: "nowshowing")
     }
     
     //MARK: - Others Methods
@@ -141,14 +141,14 @@ extension MovieListViewController: ScrollPagerDelegate {
         if changedIndex == 0 {
             
             if isNowShowingFetch == false {
-                viewModel.fetchMoviesList(strURL: "https://easy-mock.com/mock/5c19c6ff64b4573fc81a61f3/movieapp/loadmore?keyword=\(searchString)&offset=1&type=nowshowing")
+                viewModel.fetchMovies(keyword: searchString, offset: 1, type: "nowshowing")
             } else {
                 objNowshowing.reloadTableviewData()
             }
         }
         else {
             if isCommingSoonFetch == false {
-                viewModel.fetchMoviesList(strURL: "https://easy-mock.com/mock/5c19c6ff64b4573fc81a61f3/movieapp/loadmore?keyword=\(searchString)&offset=1&type=nowshowing")
+                viewModel.fetchMovies(keyword: searchString, offset: 1, type: "commingsoon")
                 isCommingSoonFetch = true
             } else {
                 objComminsoonVC.reloadTableviewData()

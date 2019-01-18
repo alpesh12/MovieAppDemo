@@ -12,9 +12,7 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    let dfReleaseDate = DateFormatter()
-
-
+    
     class func SharedDelegate () -> AppDelegate
     {
         return UIApplication.shared.delegate as! AppDelegate
@@ -25,10 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let attributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 25)]
         UINavigationBar.appearance().titleTextAttributes = attributes
         UINavigationBar.appearance().tintColor = .black
-        
-        dfReleaseDate.dateFormat = "dd MMM yyyy"
-        dfReleaseDate.timeZone = NSTimeZone.local
-        
+
         return true
     }
 

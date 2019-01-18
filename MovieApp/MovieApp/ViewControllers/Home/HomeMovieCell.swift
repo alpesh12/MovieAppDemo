@@ -43,7 +43,7 @@ class HomeMovieCell: UIView {
         }
         imgMovie.backgroundColor = UIColor.lightGray
         imgMovie.kf.indicatorType = .activity
-        imgMovie.kf.setImage(with: URL(string: objMovie.posterPath!), completionHandler: {
+        imgMovie.kf.setImage(with: URL(string: objMovie.posterPath), completionHandler: {
             (image, error, cacheType, imageUrl) in
             if (image == nil) {
                 //self.imgMovie.image = UIImage(named: "iconUserPlaceholder")

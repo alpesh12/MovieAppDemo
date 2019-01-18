@@ -34,23 +34,4 @@ class MoviewListCell: UITableViewCell {
         self.lblAgeCategory.layer.masksToBounds = true
 
     }
-    
-    func setMovieData(objMovie:Movie) -> Void
-    {
-        imgMovieList.backgroundColor = UIColor.lightGray
-        imgMovieList.kf.indicatorType = .activity
-        imgMovieList.kf.setImage(with: URL(string: objMovie.posterPath!), completionHandler: {
-            (image, error, cacheType, imageUrl) in
-            if (image == nil) {
-                //self.imgMovie.image = UIImage(named: "iconUserPlaceholder")
-            }
-        })
-        
-        lblMovieName.text = objMovie.title
-        lblReleaseDate.text = AppDelegate.SharedDelegate().dfReleaseDate.string(from: Date(timeIntervalSince1970: objMovie.releaseDate!))
-        lblMovieDescription.text = objMovie.description
-        viewRating.rating = Double((objMovie.rate! / 2.0))
-        viewRating.text = "\(String(describing: objMovie.rate!))"
-        lblAgeCategory.text = objMovie.ageCategory
-    }
 }
